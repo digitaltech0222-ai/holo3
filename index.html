@@ -17,8 +17,31 @@
     .preview-area { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 600px; }
     #canvas { display: none; }
     #previewImage { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-    .save-instruction { font-size: 14px; color: #ff4081; font-weight: bold; margin-bottom: 10px; }
-    .note { font-size: 12px; color: #666; margin-top: 5px; }
+    
+    /* 案内文字のサイズを14pxから18pxに大きく変更 */
+    .save-instruction { font-size: 18px; color: #ff4081; font-weight: bold; margin-bottom: 12px; }
+    .note { font-size: 12px; color: #666; margin-top: 10px; }
+
+    /* X（旧Twitter）ポストボタンのスタイル */
+    .share-btn-container { margin: 15px 0 5px 0; }
+    .x-share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #000000;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      width: 80%;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .x-share-btn:hover { background-color: #272727; }
+    .x-share-btn:active { transform: scale(0.98); }
   </style>
 </head>
 <body>
@@ -64,7 +87,13 @@
   <div class="save-instruction">↓ 画像を長押し or 右クリックで保存！</div>
   <canvas id="canvas"></canvas>
   <img id="previewImage" alt="プロフィールプレビュー">
-  <p class="note">※入力内容は自動で反映されます</p>
+  
+  <!-- ポスト用ボタン -->
+  <div class="share-btn-container">
+    <button id="xShareBtn" class="x-share-btn">Xにポストする</button>
+  </div>
+  
+  <p class="note">※入力内容は自動で反映されます<br>※仕様上画像は自動添付されないため、保存して手動で添付してください</p>
 </div>
 
 <script>
@@ -72,7 +101,7 @@
   const ctx = canvas.getContext('2d');
   const previewImage = document.getElementById('previewImage');
   
-  // デフォルト背景（プロキシ経由でHTTPS化）
+  // デフォルト背景
   const currentBgSrc = "https://images.weserv.nl/?url=files.twvt.me/images/twinvite/eventimage/201190095_20260508235610.jpg";
 
   const CONFIG = {
@@ -154,8 +183,8 @@
 
       const sX1 = 660, sX2 = 1047, sW = 340;
       drawSingleLineText(ctx, document.getElementById('song1').value, sX1, 490, sW, 34);
-      drawSingleLineText(ctx, document.getElementById('song2').value, sX1, 550, sW, 34);
-      drawSingleLineText(ctx, document.getElementById('song3').value, sX2, 490, sW, 34);
+      drawSingleLineText(ctx, document.getElementById('song2').value, sX2, 490, sW, 34);
+      drawSingleLineText(ctx, document.getElementById('song3').value, sX1, 550, sW, 34);
       drawSingleLineText(ctx, document.getElementById('song4').value, sX2, 550, sW, 34);
 
       drawSafeMultiLineText(ctx, document.getElementById('free').value, 660, 720, 620, 100, 36);
@@ -195,6 +224,18 @@
       const f = new FileReader(); f.onload = e => r(e.target.result); f.readAsDataURL(file);
     });
   }
+
+  // X（旧Twitter）ポストイベント処理（改行対応版）
+  document.getElementById('xShareBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('name').value.trim();
+    
+    let textBody = nameInput ? `${nameInput}のホロリズム参加表明！` : "ホロリズム参加表明を作成しました！";
+    
+    const fullText = `${textBody}\n\n #ホロリズム\n #ホロリズム参加表明`;
+    
+    const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}`;
+    window.open(xUrl, '_blank');
+  });
 
   window.onload = () => generate();
 </script>
